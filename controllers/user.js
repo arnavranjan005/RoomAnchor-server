@@ -343,7 +343,7 @@ const editUser=async({email,currentPassword,newPassword,bio,websites},context)=>
     }
 };
 
-const forgotPassword=async({email,newPassword,link},{User,res})=>{
+const forgotPassword=async({email,newPassword,link},{User,req,res})=>{
     try{
         if(User) throw new Error('Unauthorized');
         

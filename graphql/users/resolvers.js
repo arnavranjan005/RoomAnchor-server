@@ -225,10 +225,10 @@ const mutation={
         }
     },
 
-    forgotPasslink:async(_,args,{User,res})=>{
+    forgotPasslink:async(_,args,{User,req,res})=>{
         const {email,newPassword,link}=args;
         try{
-        return await forgotPassword({email,newPassword,link},{User,res});
+        return await forgotPassword({email,newPassword,link},{User,req,res});
         }
         catch(err){
         throw new Error(err.message);
