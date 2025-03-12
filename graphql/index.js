@@ -38,6 +38,8 @@ const createApolloGraphqlServer=async()=>{
                 ...Payment.resolvers.mutation
             }
         },
+        introspection:false,
+        csrfPrevention:true
     });
 
     try{
