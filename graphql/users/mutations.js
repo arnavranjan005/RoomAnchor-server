@@ -9,7 +9,7 @@ const mutations=`#graphql
     unfollow(username:String!):String!
     cancelFollowreq(username:String!):String!
     editUser(email:String,currentPassword:String,newPassword:String,bio:String,websites:[String]):edituser!
-    forgotPasslink(email:String,newPassword:String,link:String):String!
+    forgotPasslink(username:String,email:String,newPassword:String,link:String):String!
     DeleteAccount: String!
 `;
 

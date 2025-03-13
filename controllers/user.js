@@ -343,24 +343,26 @@ const editUser=async({email,currentPassword,newPassword,bio,websites},context)=>
     }
 };
 
-const forgotPassword=async({email,newPassword,link},{User,req,res})=>{
+const forgotPassword=async({username,email,newPassword,link},{User,req,res})=>{
     try{
         if(User) throw new Error('Unauthorized');
         
         if(newPassword || link){
             if(!newPassword?.length ||!link?.length) throw new Error('invalid link');
-            const username=link.split('-')[0];
-            const token=link.split('-')[1];
-            if(token!=await redis.get(`forgotPasslink:${username}`)) throw new Error('link expired');
+            const user=link.split('%')[0];
+            const token=link.split('%')[1];
+            
+            if(token!=await redis.get(`forgotPasslink:${user}`)) throw new Error('link expired');
             const pass=await bycrpt.hash(newPassword,10);
             const result= await Driver.executeQuery(`
                 MATCH(u:person{username:$username})
                 SET u.password=$pass
                 RETURN u.password AS password, u.avatarURL AS url
-            `,{username,pass});
+            `,{username:user,pass});
 
-            await redis.del(`forgotPasslink:${username}`);
-            const jwtToken=setUser(username,result.records[0].get('url'));
+            await redis.del(`forgotPasslink:${user}`);console.log(result.records);
+            
+            const jwtToken=setUser(user,result.records[0].get('url'));
             res.cookie('uuid',jwtToken,{
                 httpOnly: true,
                 secure: true,
@@ -371,17 +373,26 @@ const forgotPassword=async({email,newPassword,link},{User,req,res})=>{
             return 'password changed';
         };
 
+        if(username?.length && !email?.length) throw new Error('invalid email');
         if(!email?.length ||!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) throw new Error('invalid email');
         const decision=(await aj).protect(req,{
             email
         });
         if((await decision).isDenied()) throw new Error('invalid email');
 
+        if(!username?.length){
         const user=await Driver.executeQuery(`
             MATCH(u:person{email:$email})
             RETURN u.username AS username`,{email});
-        if(!user.records.length) throw new Error('user does not exist');
-        const username=user.records[0].get('username');
+        if(!user?.records?.length) throw new Error('user does not exist');
+        const usernames=user.records.map(record=>record.get('username'));
+        return `${usernames.join(',')}`;
+        }
+        const isValidUser=await Driver.executeQuery(`
+            MATCH(u:person{username:$username})
+            RETURN u.email AS email`,{username});
+        if(!isValidUser?.records?.length|| isValidUser.records[0].get('email')!==email) throw new Error('user does not exist');
+
         const token=uuid();
         await redis.set(`forgotPasslink:${username}`,token,'EX',60*10);
 
