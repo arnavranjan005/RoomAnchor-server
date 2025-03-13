@@ -97,7 +97,8 @@ const loginUser=async({username,password,token},{res})=>{
         httpOnly:true,
         secure:true,
         sameSite:'none',
-        maxAge:1000*60*60*24*60
+        maxAge:1000*60*60*24*60,
+        domain:process.env.CLIENT_URL.split('//')[1]
     });
     return tokenId;
     }
