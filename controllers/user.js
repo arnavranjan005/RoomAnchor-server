@@ -134,8 +134,6 @@ const getAllUsers=async({username},context)=>{
             username:user.get('username'),
             url:user.get('url')
     }));
-
-    console.log(connection,username,context.User);
     
     if(usersInConnection.records.length<5)
        usersNotInConnection= await Driver.executeQuery(`
@@ -430,7 +428,7 @@ const getSearchUsers=async({username,after},{User})=>{
     if(!User) throw new Error('Unauthorized');
     const res=await Driver.executeQuery(`
         MATCH (p:person)
-        WHERE p.username STARTS WITH $username AND p.username <> $me
+        WHERE p.username STARTS WITH $username
         WITH p, COUNT{(p)<-[:FOLLOW]-()} AS followerCount 
         WHERE followerCount >= $after 
         RETURN followerCount, p AS person
