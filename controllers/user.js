@@ -98,7 +98,7 @@ const loginUser=async({username,password,token},{res})=>{
         secure:true,
         sameSite:'none',
         maxAge:1000*60*60*24*60,
-        domain:process.env.CLIENT_URL.split('//')[1]
+        domain:'room-anchor.space'
     });
     return tokenId;
     }
