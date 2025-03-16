@@ -16,12 +16,6 @@ const verify = async ({ q, r, t }, context) => {
             if (!context.Room) {
                 const isCreator = context.User.username === room[0];
                 token = isCreator?setRoom(room[0], room[1], isCreator):setRoom(room[0], room[0]);
-                context.res.cookie('prvRoom', token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: isCreator ? undefined : 1000 * 60 * 60,
-                });
             }
 
             return {
@@ -33,14 +27,7 @@ const verify = async ({ q, r, t }, context) => {
             };
         } else {
             await redis.hdel(`users:${room[0]}`, 'room');
-            if (context.Room) {
-                context.res.cookie('prvRoom', "", {
-                    expires: new Date(0),
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                });
-            }
+            
             return {
                 username: context.User.username,
                 url: context.User.url
@@ -63,14 +50,6 @@ const verify = async ({ q, r, t }, context) => {
                 };
             }
         }
-        // if (context.Room) {
-        //     context.res.cookie('prvRoom', "", {
-        //         expires: new Date(0),
-        //         httpOnly: true,
-        //         secure: true,
-        //         sameSite: 'none',
-        //     });
-        // }
         return {
             username: context.User.username,
             url: context.User.url

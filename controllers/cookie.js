@@ -14,8 +14,7 @@ const handleCookiedel=async(req,res)=>{
         expires:new Date(0),
         httpOnly:true,
         secure:true,
-        sameSite:'none',
-        // domain:'localhost',
+        sameSite:'lax',
     });
     }catch(err){
         console.log(err);
