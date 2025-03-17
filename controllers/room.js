@@ -38,7 +38,8 @@ const createRoom=async({password,roomType,roomSize},{res,User})=>{
     res.cookie('prvRoom',token,{
             httpOnly:true,
             secure:true,
-            sameSite:'lax'
+            sameSite:'lax',
+            domain:'.room-anchor.space',
     })
 
     await redis.hset(`Room:${User.username}:owner`,'owner',User.username);
@@ -95,10 +96,11 @@ console.log(roomType);
 
     const token=setRoom(roomId,roomType);
     res.cookie('prvRoom',token,{
-        httpOnly:true,
+            httpOnly:true,
             secure:true,
             maxAge:1000*60*60,
             sameSite:'lax',
+            domain:'.room-anchor.space',
     })
 
     return JSON.stringify({msg:'room joined',roomType});
@@ -122,10 +124,11 @@ const destroyRoom=async({res,User,Room})=>{
         roomId:Room.prvRoom
     })
     res.cookie('prvRoom','',{
-        expires:new Date(0),
+        maxAge:0,
         httpOnly:true,
         secure:true,
         sameSite:'lax',
+        domain:'.room-anchor.space',
     })
     return 'room distroryed';
 }
@@ -189,10 +192,11 @@ const leaveRoom=async({username},{res,User,Room})=>{
     });
     if(User.username!==Room.prvRoom)
     res.cookie('prvRoom','',{
-        expires:new Date(0),
+        maxAge:0,
         httpOnly:true,
         secure:true,
         sameSite:'lax',
+        domain:'.room-anchor.space',
     });
     return 'room left';
     }

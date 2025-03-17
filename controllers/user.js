@@ -49,6 +49,7 @@ const createUser=async({username,email,password,bio,websites},{req,res})=>{
             httpOnly: true,
             secure: true,
             sameSite:'lax',
+            domain:'.room-anchor.space',
             maxAge: 1000*60*60*24*60
         });
         return token;
@@ -209,6 +210,7 @@ const handleUploadImg=async(req,res)=>{
             httpOnly:true,
             secure:true,
             sameSite:'lax',
+            domain:'.room-anchor.space',
             maxAge:1000*60*60*24*60
         });
         return res.status(200).json({tokenId});
@@ -366,6 +368,7 @@ const forgotPassword=async({username,email,newPassword,link},{User,req,res})=>{
                 httpOnly: true,
                 secure: true,
                 sameSite:'lax',
+                domain:'.room-anchor.space',
                 maxAge: 1000*60*60*24*60
             })
 
@@ -481,10 +484,11 @@ const DeleteAccount=async({User,res})=>{
         {username:User.username});
 
         res.cookie('uuid','',{
-            expires:new Date(0),
+            maxAge:0,
             httpOnly:true,
             secure:true,
             sameSite:'lax',
+            domain:'.room-anchor.space',
         });
 
         return 'account deleted';

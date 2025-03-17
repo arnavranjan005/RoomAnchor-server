@@ -11,10 +11,11 @@ const handleCookiedel=async(req,res)=>{
     }
 
     res.cookie('prvRoom','',{
-        expires:new Date(0),
+        maxAge:0,
         httpOnly:true,
         secure:true,
         sameSite:'lax',
+        domain:'.room-anchor.space',
     });
     }catch(err){
         console.log(err);
