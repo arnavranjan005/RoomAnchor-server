@@ -11,6 +11,7 @@ const mutations=`#graphql
     editUser(email:String,currentPassword:String,newPassword:String,bio:String,websites:[String]):edituser!
     forgotPasslink(username:String,email:String,newPassword:String,link:String):String!
     DeleteAccount: String!
+    DeleteImage: String!
 `;
 
 module.exports={mutations};

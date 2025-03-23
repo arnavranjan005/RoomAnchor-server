@@ -1,5 +1,5 @@
 const { handleFollow, rejectFollowreq, acceptFollowreq, disconnect, unfollow, cancelFollowreq, getFollowreq, getFollowing, getMetualFollowers, getFollowers, getSuggestionUsers, getUserfollowsent, getUserfollowrecv } = require("../../controllers/followNunfollow");
-const { createUser, loginUser, getAllUsers, getPopularUsers, getUseraccount, editUser, forgotPassword, getSearchUsers, DeleteAccount } = require("../../controllers/user");
+const { createUser, loginUser, getAllUsers, getPopularUsers, getUseraccount, editUser, forgotPassword, getSearchUsers, DeleteAccount, DeleteImage } = require("../../controllers/user");
 const { verify } = require("../../controllers/verify");
 
 const queries={
@@ -238,6 +238,15 @@ const mutation={
     DeleteAccount:(_,args,{User,res})=>{
         try{
         return DeleteAccount({User,res});
+        }
+        catch(err){
+        throw new Error(err.message);
+        }
+    },
+
+    DeleteImage:(_,args,context)=>{
+        try{
+        return DeleteImage(context);
         }
         catch(err){
         throw new Error(err.message);

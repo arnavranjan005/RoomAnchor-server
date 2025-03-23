@@ -98,7 +98,7 @@ const loginUser=async({username,password,token},{res})=>{
         httpOnly:true,
         secure:true,
         sameSite:'lax',
-        domain:'.room-anchor.space',
+        // domain:'.room-anchor.space',
         maxAge:1000*60*60*24*60
     });
     return tokenId;
@@ -498,7 +498,32 @@ const DeleteAccount=async({User,res})=>{
         
         throw new Error(err.message);
     }
-}
+};
+
+const DeleteImage=async(context)=>{
+    try{
+        const {User,res}=context;
+        if(!User) throw new Error('Unauthorized');
+        await Driver.executeQuery(`
+        MATCH (u:person {username: $username})
+        SET u.avatarURL = ''
+        `, {username:User.username});
+        const token=setUser(User.username);
+        res.cookie('uuid',token,{
+            httpOnly:true,
+            secure:true,
+            sameSite:'lax',
+            domain:'.room-anchor.space',
+            maxAge:1000*60*60*24*60,
+        });
+        return 'image deleted';
+    }
+    catch(err){
+        console.log(err);
+        
+        throw new Error(err.message);
+    }
+};
 
 module.exports={
     createUser,
@@ -510,5 +535,6 @@ module.exports={
     editUser,
     forgotPassword,
     getSearchUsers,
-    DeleteAccount
+    DeleteAccount,
+    DeleteImage
 }

@@ -1,8 +1,13 @@
 const multer = require("multer");
+const fs=require('fs');
 
 const storage=multer.diskStorage({
     destination:(req,file,cb)=>{
-        cb(null,'./temp')
+        const dir = './temp';
+        fs.mkdir(dir, { recursive: true }, (err) => {
+            if (err) return cb(err);
+            cb(null, dir);
+        });
     },
     filename:(req,file,cb)=>{
         cb(null,Date.now()+file.originalname)
