@@ -98,7 +98,7 @@ const loginUser=async({username,password,token},{res})=>{
         httpOnly:true,
         secure:true,
         sameSite:'lax',
-        // domain:'.room-anchor.space',
+        domain:'.room-anchor.space',
         maxAge:1000*60*60*24*60
     });
     return tokenId;
