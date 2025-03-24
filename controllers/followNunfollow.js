@@ -314,7 +314,7 @@ const getSuggestionUsers=async({after},context)=>{
 
     const pageInfo={
         hasNextPage:edges.length===10,
-        endCursor:edges[edges.length-1]?.cursor
+        endCursor:edges.length?edges[edges.length-1]?.cursor:0
     };
     
     return {edges,pageInfo};
