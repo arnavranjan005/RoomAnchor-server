@@ -11,6 +11,10 @@ const { isAuth } = require("../middleware/isuserAuth.js");
 const router = express.Router();
 let userRes={};
 
+router.get('/',(req,res)=>{
+    return res.json({msg:'active'})
+});
+
 router.post('/subscribe',async(req,res)=>{
     const {subscription}=req.body;
     console.log(subscription);
