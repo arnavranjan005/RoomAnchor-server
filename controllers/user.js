@@ -1,10 +1,11 @@
-const {redis, Driver}=require(`../DB/connection.js`);
+const {redis, Driver, pc}=require(`../DB/connection.js`);
 const {setUser}=require('../services/token/jwtToken.js');
 const bycrpt=require('bcryptjs');
 const {sendEmail}=require('../services/mail/mail.js')
 const { uploadImg_Cloudinary } = require('../services/cloudinary.js');
 const { aj } = require('../services/security/arcjet.js');
-const {v4:uuid}=require('uuid')
+const {v4:uuid}=require('uuid');
+const { imagekit } = require('../services/posts/imageKit.js');
 
 const createUser=async({username,email,password,bio,websites},{req,res})=>{
     try{
@@ -475,13 +476,41 @@ const DeleteAccount=async({User,res})=>{
         await redis.del(`users:${User.username}`);
         await redis.del(`forgotPasslink:${User.username}`);
         await redis.del(`Room:${User.username}`);
-        await Driver.executeQuery(`
+        const postDetails=await Driver.executeQuery(`
         MATCH (u:person {username: $username})
         OPTIONAL MATCH (u)-[r:POST]->(p:post)
+        WITH u, r, p, COLLECT(p) AS posts
         OPTIONAL MATCH (u)-[ord:ORDER]->(o:order)
-        DELETE r, ord 
-        DELETE u, p, o`,
+        DELETE r, ord, u, p, o
+        RETURN posts`,
         {username:User.username});
+
+        const postArray=postDetails.records[0].get('posts');
+
+        if(postArray.length){
+            const index=pc.Index(process.env.PINECONE_INDEX_NAME);
+            await index.namespace("post").deleteMany(postArray.map(post=>post.properties.id));
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            const deletionResults = [];
+            for (const post of postArray) {
+              try {
+                await imagekit.deleteFile(post.properties.filePath);
+                deletionResults.push({ success: true, filePath: post.properties.filePath });
+                await delay(100);
+              } catch (error) {
+                deletionResults.push({ success: false, filePath: post.properties.filePath, error });
+              }
+            }
+        }
+        const res=await fetch(`${process.env.EVENTS_URL}/${User.username}`,{
+            method:'DELETE',
+            headers: {
+                'x-api-key': process.env.CREDENTIAL_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
+        if(!res.ok) throw new Error('Internal server error');
 
         res.cookie('uuid','',{
             maxAge:0,

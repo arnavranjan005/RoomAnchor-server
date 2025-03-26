@@ -411,11 +411,17 @@ const deletePost=async({id},context)=>{
         if(!context.User) throw new Error("Unauthorized");
         if(id.length && id.split('-')[0]!==context.User.username) throw new Error("Unauthorized");
 
-        await Driver.executeQuery(`MATCH (p:post {id: $id}) DETACH DELETE p`,{id});
+        const res=await Driver.executeQuery(`
+            MATCH (p:post {id: $id})
+            WITH p, p.filePath AS filePath
+            DETACH DELETE p
+            RETURN filePath`,
+            {id});
 
         const index=pc.Index(process.env.PINECONE_INDEX_NAME);
         await index.namespace("post").deleteOne(id);
 
+        await imagekit.deleteFile(res.records[0].get('filePath'));
         return true;
     }
     catch(err){
