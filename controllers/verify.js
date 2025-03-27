@@ -15,7 +15,7 @@ const verify = async ({ q, r, t }, context) => {
             let token=null;
             if (!context.Room) {
                 const isCreator = context.User.username === room[0];
-                token = isCreator?setRoom(room[0], room[1], isCreator):setRoom(room[0], room[0]);
+                token = isCreator?setRoom(room[0], room[1], isCreator):setRoom(room[0], room[1]);
             }
 
             return {
