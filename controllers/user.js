@@ -214,7 +214,7 @@ const handleUploadImg=async(req,res)=>{
             domain:'.room-anchor.space',
             maxAge:1000*60*60*24*60
         });
-        return res.status(200).json({tokenId});
+        return res.status(200).json({tokenId,url});
     }catch(err){console.log(err);
     
         return res.status(500).send(err.message);
