@@ -483,7 +483,7 @@ const DeleteAccount=async({User,res})=>{
         OPTIONAL MATCH (u)<-[f2:FOLLOW]-(f3:person)
         WITH u, r, p, COLLECT(p) AS posts
         OPTIONAL MATCH (u)-[ord:ORDER]->(o:order)
-        DELETE r,f,f2 ord, u, p, o
+        DELETE r,f,f2, ord, u, p, o
         RETURN posts`,
         {username:User.username});
 
