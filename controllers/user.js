@@ -505,14 +505,14 @@ const DeleteAccount=async({User,res})=>{
               }
             }
         }
-        const res=await fetch(`${process.env.EVENTS_URL}/${User.username}`,{
+        const resdb=await fetch(`${process.env.EVENTS_URL}/${User.username}`,{
             method:'DELETE',
             headers: {
                 'x-api-key': process.env.CREDENTIAL_KEY,
                 'Content-Type': 'application/json'
             }
         });
-        if(!res.ok) throw new Error('Internal server error');
+        if(!resdb.ok) throw new Error('Internal server error');
 
         res.cookie('uuid','',{
             maxAge:0,
