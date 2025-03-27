@@ -479,9 +479,11 @@ const DeleteAccount=async({User,res})=>{
         const postDetails=await Driver.executeQuery(`
         MATCH (u:person {username: $username})
         OPTIONAL MATCH (u)-[r:POST]->(p:post)
+        OPTIONAL MATCH (u)-[f:FOLLOW]->(f1:person)
+        OPTIONAL MATCH (u)<-[f2:FOLLOW]-(f3:person)
         WITH u, r, p, COLLECT(p) AS posts
         OPTIONAL MATCH (u)-[ord:ORDER]->(o:order)
-        DELETE r, ord, u, p, o
+        DELETE r,f,f2 ord, u, p, o
         RETURN posts`,
         {username:User.username});
 
