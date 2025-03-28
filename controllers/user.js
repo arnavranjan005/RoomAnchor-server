@@ -476,22 +476,25 @@ const DeleteAccount=async({User,res})=>{
         await redis.del(`users:${User.username}`);
         await redis.del(`forgotPasslink:${User.username}`);
         await redis.del(`Room:${User.username}`);
+
         const postDetails=await Driver.executeQuery(`
-        MATCH (u:person {username: $username})
-        OPTIONAL MATCH (u)-[r:POST]->(p:post)
-        OPTIONAL MATCH (u)-[up:UPVOTE]->(:post)
-        OPTIONAL MATCH (u)-[dn:DOWNVOTE]->(:post)
-        OPTIONAL MATCH (u)-[f:FOLLOW]->(:person)
-        OPTIONAL MATCH (u)<-[f2:FOLLOW]-(:person)
-        WITH u, r, p, up, dn, f, f2, COLLECT(p) AS posts
-        OPTIONAL MATCH (u)-[ord:ORDER]->(o:order)
-        DELETE r, up, dn, f, f2, ord, u, p, o
-        RETURN posts
-        `,
-        {username:User.username});
+            MATCH (u:person{username:$username})-[:POST]->(p:post)
+            RETURN p AS posts`,{username:User.username});
 
-        const postArray=postDetails.records[0].get('posts');
+            await Driver.executeQuery(`
+                MATCH (u:person {username: $username})
+                OPTIONAL MATCH (u)-[r:POST]->(p:post)
+                OPTIONAL MATCH (u)-[up:UPVOTE]->(:post)
+                OPTIONAL MATCH (u)-[dn:DOWNVOTE]->(:post)
+                OPTIONAL MATCH (u)-[f:FOLLOW]->(:person)
+                OPTIONAL MATCH (u)<-[f2:FOLLOW]-(:person)
+                OPTIONAL MATCH (u)-[ord:ORDER]->(o:order)
+                DELETE r, up, dn, f, f2, ord, u, p, o
+            `, { username: User.username });
+        const postArray=postDetails.records?.map(record=>record.get('posts'))||[];
 
+        console.log("postArray",postArray);
+        
         if(postArray.length){
             const index=pc.Index(process.env.PINECONE_INDEX_NAME);
             await index.namespace("post").deleteMany(postArray.map(post=>post.properties.id));
@@ -507,7 +510,9 @@ const DeleteAccount=async({User,res})=>{
                 deletionResults.push({ success: false, filePath: post.properties.filePath, error });
               }
             }
-        }
+            console.log(deletionResults);
+            
+        };
         const resdb=await fetch(`${process.env.EVENTS_URL}/${User.username}`,{
             method:'DELETE',
             headers: {
