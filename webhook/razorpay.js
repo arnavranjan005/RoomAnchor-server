@@ -15,6 +15,7 @@ const handleVrifyPayment = async ({req, res,userRes}) => {
     }
     const event=req.body;
     const paymentEntity = event.payload.payment.entity;
+        console.log(paymentEntity);
     const orderId=paymentEntity.notes.Order_id;
     const amount=paymentEntity.amount;
     const currency=paymentEntity.currency;
