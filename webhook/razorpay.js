@@ -11,6 +11,7 @@ const handleVrifyPayment = async ({req, res,userRes}) => {
         .update(JSON.stringify(req.body))
         .digest('base64');
     if (recived_signature !== generated_signature) {
+        console.log("Invalid payment");
         return res.status(400).send('Invalid payment');
     }
     const event=req.body;
