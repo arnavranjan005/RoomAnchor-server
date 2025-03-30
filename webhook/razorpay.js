@@ -10,17 +10,17 @@ const handleVrifyPayment = async ({req, res,userRes}) => {
     const generated_signature = crypto.createHmac('sha256', secret)
         .update(JSON.stringify(req.body))
         .digest('base64');
-    if (recived_signature !== generated_signature) {
-        console.log("Invalid payment");
-        return res.status(400).send('Invalid payment');
-    }
+    //if (recived_signature !== generated_signature) {
+       // console.log("Invalid payment");
+     //   return res.status(400).send('Invalid payment');
+   //  }
     const event=req.body;
     const paymentEntity = event.payload.payment.entity;
-        console.log(paymentEntity);
+        console.log("paymentEntity",paymentEntity,"event",event);
     const orderId=paymentEntity.notes.Order_id;
     const amount=paymentEntity.amount;
     const currency=paymentEntity.currency;
-    const username=paymentEntity.receipt.split('_')[0];
+    /*const username=paymentEntity.receipt.split('_')[0];
     const roomType=paymentEntity.receipt.split('_')[1];
     const roomSize=paymentEntity.notes.roomSize;
     if(event.event==="payment.captured"){
@@ -70,7 +70,7 @@ const handleVrifyPayment = async ({req, res,userRes}) => {
     }
     });
         return;
-    }
+    }*/
     }catch(err){
         console.log(err);
         return res.status(500).send("Internal server error");
