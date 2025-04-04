@@ -122,8 +122,8 @@ router.post('/leave',handleCookiedel);
 // })
 router.get('/payment',async(req,res)=>{
     try{
-        const testMerchantId = 'PGTESTPAYUAT86';
-        const testSalt_key='9243409-7796-8924-ab56988a6076';
+        const testMerchantId = process.env.MERCHANT_ID;
+        const testSalt_key=process.env.PHONEPAY_SALT_KEY;
         const data={
             "merchantId": testMerchantId,
             "merchantSubscriptionId": "MSUB123456789012345",
@@ -143,7 +143,7 @@ router.get('/payment',async(req,res)=>{
           const checksum=sha256+'###'+1;
           console.log(checksum,payloadBase64);
           
-        const res= await fetch(`https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/subscription/create`,{
+        let res= await fetch(`https://api.phonepe.com/apis/pg/v3/recurring/subscription/create`,{
             method:'POST',
             headers:{
                 'accept':'application/json',
@@ -153,7 +153,9 @@ router.get('/payment',async(req,res)=>{
             body:JSON.stringify({request:payloadBase64})
         });
         console.log(res);
-        return res.json();
+        res=await res.json();
+        console.log(res);
+        return res.status(200).json(res);
     }
     catch(err){
         console.log(err);
