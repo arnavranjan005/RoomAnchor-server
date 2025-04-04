@@ -143,7 +143,7 @@ router.get('/payment',async(req,res)=>{
           const checksum=sha256+'###'+1;
           console.log(checksum,payloadBase64);
           
-        let resapi= await fetch(`https://mercury-t2.phonepe.com/v3/recurring/subscription/create`,{
+        let resapi= await fetch(`https://api-preprod.phonepe.com/apis/pg-sandbox/v3/recurring/subscription/create`,{
             method:'POST',
             headers:{
                 'accept':'application/json',
