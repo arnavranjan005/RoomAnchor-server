@@ -143,7 +143,7 @@ router.get('/payment',async(req,res)=>{
           const checksum=sha256+'###'+1;
           console.log(checksum,payloadBase64);
           
-        let resapi= await fetch(`https://api.phonepe.com/apis/hermes/pg/v3/recurring/subscription/create`,{
+        let resapi= await fetch(`https://api.phonepe.com/apis/pg`,{
             method:'POST',
             headers:{
                 'accept':'application/json',
