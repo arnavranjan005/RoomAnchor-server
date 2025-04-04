@@ -148,7 +148,8 @@ router.get('/payment',async(req,res)=>{
             headers:{
                 'accept':'application/json',
                 'Content-Type':'application/json',
-                'X-Verify':checksum
+                'X-Verify':checksum,
+                'X-Client-Id':'SU2504032024462215760316'
             },
             body:JSON.stringify({request:payloadBase64})
         });
