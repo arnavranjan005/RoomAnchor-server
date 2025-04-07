@@ -122,14 +122,14 @@ router.post('/leave', handleCookiedel);
 // })
 router.get('/payment', async (req, res) => {
     try {
-        const MERCHANT_ID = process.env.MERCHANT_ID;
-        const SALT_KEY = process.env.PHONEPAY_SALT_KEY;
+        const MERCHANT_ID = 'M22RQ3XNVMMK6';
+        const SALT_KEY = 'ed8980dc-b208-4281-a825-a3dc38d74364';
 
         const params = new URLSearchParams();
         params.append('grant_type', 'client_credentials');
         params.append('client_id', 'SU2504032024462215760316');
         params.append('client_secret', SALT_KEY);
-        params.append('client_version', '1');
+        params.append('client_version', 1);
         let authToken = await fetch(`https://api.phonepe.com/apis/identity-manager/v1/oauth/token`, {
             method: 'POST',
             headers: {
@@ -139,7 +139,7 @@ router.get('/payment', async (req, res) => {
         });
         authToken = await authToken.json();
         const { access_token } = authToken;
-        console.log(access_token);
+        console.log(authToken);
         let resapi = await fetch('https://api.phonepe.com/apis/pg/subscriptions/v2/setup', {
             method: 'POST',
             headers: {
@@ -148,7 +148,7 @@ router.get('/payment', async (req, res) => {
                 'Authorization': `O-Bearer ${access_token}`
             },
             body: JSON.stringify({
-                "merchantOrderId": "MO1443709025658932",
+                "merchantOrderId": "MO144370902565893_2",
                 "amount": 200,
                 "paymentFlow": {
                     "type": "SUBSCRIPTION_SETUP",
